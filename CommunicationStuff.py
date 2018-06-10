@@ -1,4 +1,6 @@
 import numpy as np
+        ###Tables generator
+        ###sheizze man
         ###Mars parameters
 mu = 4.282837e13   
 R_mars = 3390*1000 #km

@@ -75,7 +75,7 @@ def S_bot(L, H):
 A_base_bot = S_bot(L_base, H_base) #Bottom area, half of ellipsoid surface m^2
 A_base_top = np.pi * L_base**2 / 4 #Top area, assume circle surface area m^2
 A_base = A_base_bot+A_base_top
-A_UAV = 1.58 * 2 * 1.5 #Old surface area
+A_UAV = 2.5 * 2.30 #Wetted surface area
 
 Q_int_base_peak = 150 #W
 Q_int_base_nom = 25 #W both sorta assumed, refer to systems design sheet

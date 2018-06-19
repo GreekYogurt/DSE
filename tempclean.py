@@ -76,12 +76,12 @@ A_base_top = np.pi * L_base**2 / 4 #Top area, assume circle surface area m^2
 A_base = A_base_bot+A_base_top
 A_UAV = 2.5 * 2.30 #Wetted surface area
 
-Q_int_base_peak = 150 #W
-Q_int_base_nom = 25 #W both sorta assumed, refer to systems design sheet
+Q_int_base_peak = 150 #W, based on charging efficiency and component outside of thermal box power usage
+Q_int_base_nom = 25 #W, based on components outside of box power usage
 
-Q_int_UAV_cruise = 15 #W, taken from Wout
-Q_int_UAV_charge = 50 #W, taken from Wout
-Q_int_UAV_standby = 5 #W, low value taken
+Q_int_UAV_cruise = 15 #W, based on mechanical power transfer efficiency
+Q_int_UAV_charge = 50 #W, based on charging efficiency
+Q_int_UAV_standby = 5 #W, based on component heat dissipated during standby
 #Surface oatings
 
 eps_base = 0.06 #bare aluminium
@@ -89,8 +89,6 @@ alpha_base = 0.14 #bare aluminium
 eps_UAV = eps_base #Also bare aluminium
 alpha_UAV = alpha_base #And here
 #Power dissipated
-Q_int_base_nom = 25 #W, Bare aluminium, SMAD
-Q_int_base_peak = 150 #W, Bare aluminium, SMAD
 T_base_winnight, Q_base_win = EqTemp(eps_base, alpha_base, Q_int_base_nom, np.min(q_vik_win), A_base_top, A_base_bot, np.min(q_ir))
 T_base_sumday, Q_base_sum = EqTemp(eps_base, alpha_base, Q_int_base_peak, np.max(q_vik_sum), A_base_top, A_base_bot, np.max(q_ir))
 print('---------------------------------------')
@@ -132,9 +130,9 @@ A_expUAV = dim_boxUAV[0] * dim_boxUAV[1]
 
 t_MLI = (0.16 + 0.025 + 0.01)*7/1000 #MLI thickness
 
-Qint_UAVCruise = 34 #W, batteries being discharged + CDH
-Qint_UAVSleep = 6.6 #W, batteries not being used
-Qint_base = 50.2 #W, receive mode
+#Qint_UAVCruise = 34 #W, batteries being discharged + CDH
+#Qint_UAVSleep = 6.6 #W, batteries not being used
+#Qint_base = 50.2 #W, receive mode
             ###Required temperatures
 T_base_req = [-10, 40] #Atomic clock
 T_base_min = np.min(T_base_req)+273 #Batteries

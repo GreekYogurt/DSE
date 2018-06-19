@@ -128,11 +128,7 @@ A_expBASE = dim_boxBASE[1]*dim_boxBASE[2] + dim_boxBASE[0] * dim_boxBASE[1]/2
 #A_expUAV = (4524+ 3136 + 10670.89 + 676)/10**6 #Exposed box area
 A_expUAV = dim_boxUAV[0] * dim_boxUAV[1]
 
-t_MLI = (0.16 + 0.025 + 0.01)*7/1000 #MLI thickness
-
-#Qint_UAVCruise = 34 #W, batteries being discharged + CDH
-#Qint_UAVSleep = 6.6 #W, batteries not being used
-#Qint_base = 50.2 #W, receive mode
+t_MLI = (0.16 + 0.025 + 0.01)*7/1000 #MLI thickness, 0.16mm dacron netting insulation, 0.025 mm coated and backet kapton, 0.01 mm aluminized kaptop per layer
             ###Required temperatures
 T_base_req = [-10, 40] #Atomic clock
 T_base_min = np.min(T_base_req)+273 #Batteries
@@ -145,8 +141,8 @@ T_UAV_max = np.max(T_UAV_req)+273 #Spectrometer, batteries
 Q_int_UAVbox_nom = 7 #W, based on power dissipated
 Q_int_UAVbox_peak = 20  #W, based on power dissipated
 
-Q_int_Basebox_nom = 61.6 #W, based on power dissipated
-Q_int_Basebox_peak = 100 #W, peak, based on nominal dissipated +40W
+Q_int_Basebox_nom = 61.6 #W, based on nominal power dissipated
+Q_int_Basebox_peak = 100 #W, peak, based on nominal dissipated +40W from transmission
 
             ###UAV box
             #Cold case, winter night, nominal heat
@@ -186,7 +182,7 @@ print('Cold, Base Box, Temp of',minheat(Q_box_base_cold)[1], 'with a heat added/
 T_rad = 303 #K, temperature the radiator is kept at https://arc.aiaa.org/doi/abs/10.2514/3.26072?journalCode=jsr
 A_req_rad_UAVbox = A_rad(Q_box_cold, T_rad) #Required radiator area for UAV
 A_req_rad_Basebox = A_rad(1/2 * Q_int_Basebox_nom, T_rad) #Radiator area for Base
-rho_MLI = 0.37 #kg/m^2, 15 layers, SMAD
+rho_MLI = 0.37 #kg/m^2, average MLI thickness, SMAD
 rho_rad = 3.3 #kg/m^2, SMAD
 rho_pipe = 0.15 #kg/m heat pipe, SMAD
             ###Mass estimates
@@ -207,3 +203,6 @@ print('Total', M_TC_UAV, 'Pipes', M_pipeUAV, 'Radiator', M_radUAV, 'MLI', M_MLIU
 print('Power required, during nights:', Q_box_cold, 'W')
 print('Mass breakdown, Base:')
 print('Total', M_TC_base, 'Pipes', M_pipeBase, 'Radiator', M_radBase, 'MLI', M_MLIBASE)
+
+
+print('Verification, average Mars surface temperature, neglecting atmosphere', EqTemp(0.9, 0.75, 0, 1362/1.52**2, 144.8*10**15/2, 144.8*10**15/2, 0)[0]-273,'C')

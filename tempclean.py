@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 def A_rad(Q_req, T_rad):
     #Returns the required radiator area based on the power it must output and its temperature
     eps_rad = 0.78
@@ -19,7 +18,7 @@ def TempBox(Q_rad, Q_int, q_UAV, A_box, A_box_exp):
         eps_box_exp = 0.7 #White pain, SMAD
     elif A_box == A_boxBASE:
         base = 1
-        eps_box_exp = 0.92 #Also white paint, SMAD
+        eps_box_exp = 0.92 #Also white paint, SMAD, Z93
     alpha_box = 0.17
     if Q_rad + Q_int + q_UAV * A_box * alpha_box>0 and base == 0:
         T_box = ((Q_rad + Q_int + q_UAV * A_box * alpha_box)/(2* sigma * (eps_box_exp * A_box_exp + eps_box* (A_box - A_box_exp))))**0.25
@@ -167,6 +166,7 @@ for Q in np.arange(-75,75, 1):
         if T_box_UAV_temp<T_UAV_max:
             Q_box_UAV_hot.append([Q, T_box_UAV_temp])
 print('Hot, UAV Box, Temp of',minheat(Q_box_UAV_hot)[1], 'with a heat added/removed', minheat(Q_box_UAV_hot)[0])
+print('--------------')
             ###Base station box
 Q_box_base_hot = []
 Q_box_base_cold = []
@@ -204,8 +204,8 @@ M_MLIBASE = (A_boxBASE - A_expBASE) * rho_MLI
 M_radBase = A_req_rad_Basebox * rho_rad 
 M_pipeBase = (2 * rho_pipe) #Assuming 2 meters of heatpipes
 M_TC_base = M_MLIBASE + M_pipeUAV + M_radBase + M_sensor
-print('Mass breakdown, UAV:')
+print('Mass and power, UAV:')
 print('Total', M_TC_UAV, 'Pipes', M_pipeUAV, 'Radiator', M_radUAV, 'MLI', M_MLIUAV)
-print('Power required, during nights:', Q_box_cold)
+print('Power required, during nights:', Q_box_cold, 'W')
 print('Mass breakdown, Base:')
 print('Total', M_TC_base, 'Pipes', M_pipeBase, 'Radiator', M_radBase, 'MLI', M_MLIBASE)

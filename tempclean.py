@@ -133,7 +133,7 @@ t_MLI = (0.16 + 0.025 + 0.01)*7/1000 #MLI thickness, 0.16mm dacron netting insul
 T_base_req = [-10, 40] #Atomic clock
 T_base_min = np.min(T_base_req)+273 #Batteries
 T_base_max = np.max(T_base_req)+273 #Batteries
-T_UAV_req = [0, 35] #Spectrometer, batteries
+T_UAV_req = [0  , 35] #Spectrometer, batteries
 T_UAV_min = np.min(T_UAV_req)+273 #Spectrometer, batteries
 T_UAV_max = np.max(T_UAV_req)+273 #Spectrometer, batteries
             
@@ -151,6 +151,7 @@ for Q in np.arange(0,75, 1):
     if T_box_UAV_temp>T_UAV_min:
         print('Cold, UAV Box, Heat required', Q, 'W for an equil temp of', T_box_UAV_temp, 'K')
         Q_box_cold = Q
+        T_UAVbox_C = T_box_UAV_temp
         break
             #Warm case
 Q_box_UAV_hot = []
@@ -206,3 +207,50 @@ print('Total', M_TC_base, 'Pipes', M_pipeBase, 'Radiator', M_radBase, 'MLI', M_M
 
 
 print('Verification, average Mars surface temperature, neglecting atmosphere', EqTemp(0.9, 0.75, 0, 1362/1.52**2, 144.8*10**15/2, 144.8*10**15/2, 0)[0]-273,'C')
+print('Sensitivity Analysis')
+def Diff(v1, v2):
+    #Outputs the value and the % change between two values
+    return (v2-v1), (v2-v1)/v1*100
+#Changes in inputs
+Q_int_base_peak2 = 150*0.8 #W, 20% decrease
+Q_int_base_nom2 = 25*0.8 #W
+Q_int_UAV_cruise2 = 15*0.8 #W
+Q_int_UAV_standby2 = 5*0.8 #W
+T_box_UAV_tempW = TempBox(Q_box_cold, Q_int_UAVbox_nom,q_rad_UAV_winnight, A_boxUAV, A_expUAV)
+T_box_UAV_tempD = TempBox(minheat(Q_box_UAV_hot)[0], Q_int_UAVbox_peak,q_rad_UAV_sumday_cruise, A_boxUAV, A_expUAV)
+T_box_base_tempD = TempBox(minheat(Q_box_base_hot)[0], Q_int_Basebox_peak, q_rad_base_sumday, A_boxBASE, A_expBASE)
+T_box_base_tempW = TempBox(minheat(Q_box_base_cold)[0], Q_int_Basebox_nom, q_rad_base_winnight, A_boxBASE, A_expBASE)
+
+print('Int outside heat diff [Abs, %], UAVwin, UAVsum, Basewin, Basesum', Diff(Q_int_UAV_standby,Q_int_UAV_standby2), Diff(Q_int_UAV_cruise,Q_int_UAV_cruise2), Diff(Q_int_base_nom,Q_int_base_nom2), Diff(Q_int_base_peak,Q_int_base_peak2))
+T_UAV_winnight2, Q_UAV_win2 = EqTemp(eps_UAV, alpha_UAV, Q_int_UAV_standby2, np.min(q_vik_win), A_UAV/2, A_UAV/2, np.min(q_ir))
+T_UAV_sumday_cruise2, Q_UAV_sumday_cruise2 = EqTemp(eps_UAV, alpha_UAV, Q_int_UAV_cruise2, np.max(q_vik_sum), A_UAV/2, A_UAV/2, np.max(q_ir))
+T_base_winnight2, Q_base_win2 = EqTemp(eps_base, alpha_base, Q_int_base_nom2, np.min(q_vik_win), A_base_top, A_base_bot, np.min(q_ir))
+T_base_sumday2, Q_base_sum2 = EqTemp(eps_base, alpha_base, Q_int_base_peak2, np.max(q_vik_sum), A_base_top, A_base_bot, np.max(q_ir))
+q_rad_base_winnight2 = Q_base_win2[0]/A_base #radiated flux, base, winter [W/m^2]
+q_rad_base_sumday2 = Q_base_sum2[0]/A_base #Radiated flux, base, summer [W/m^2]
+q_rad_UAV_winnight2 = Q_UAV_win2[0]/A_UAV
+q_rad_UAV_sumday_cruise2 = Q_UAV_sumday_cruise2[0]/A_UAV
+print('Outside temperatures [Abs, %], UAVwin, UAVsum, Basewin, Basesum', Diff(T_UAV_winnight,T_UAV_winnight2),Diff(T_UAV_sumday_cruise,T_UAV_sumday_cruise2), Diff(T_base_winnight,T_base_winnight2), Diff(T_base_sumday,T_base_sumday2))
+print('IR radiated flux [Abs, %], UAVwin, UAVsum, Basewin, Basesum', Diff(q_rad_UAV_winnight,q_rad_UAV_winnight2), Diff(q_rad_UAV_sumday_cruise,q_rad_UAV_sumday_cruise2), Diff(q_rad_base_winnight,q_rad_base_winnight2), Diff(q_rad_base_sumday,q_rad_base_sumday2))
+T_box_UAV_tempW2 = TempBox(Q_box_cold, Q_int_UAVbox_nom,q_rad_UAV_winnight2, A_boxUAV, A_expUAV)
+T_box_UAV_tempD2 = TempBox(minheat(Q_box_UAV_hot)[0], Q_int_UAVbox_peak,q_rad_UAV_sumday_cruise2, A_boxUAV, A_expUAV)
+T_box_base_tempD2 = TempBox(minheat(Q_box_base_hot)[0], Q_int_Basebox_peak, q_rad_base_sumday2, A_boxBASE, A_expBASE)
+T_box_base_tempW2 = TempBox(minheat(Q_box_base_cold)[0], Q_int_Basebox_nom, q_rad_base_winnight2, A_boxBASE, A_expBASE)
+print('Box temperatures [Abs, %], UAVwin, UAVsum, Basewin, Basesum', Diff(T_box_UAV_tempW,T_box_UAV_tempW2), Diff(T_box_UAV_tempD,T_box_UAV_tempD2), Diff(T_box_base_tempW,T_box_base_tempW2), Diff(T_box_base_tempD,T_box_base_tempD2))
+
+Q_int_UAVbox_nom2 = 7*0.8 #W, based on power dissipated
+Q_int_UAVbox_peak2 = 20*0.8  #W, based on power dissipated
+Q_int_Basebox_nom2 = 61.6*0.8 #W, based on nominal power dissipated
+Q_int_Basebox_peak2 = 100*0.8 #W, peak, based on nominal dissipated +40W from transmission
+
+
+
+T_box_UAV_tempW3 = TempBox(Q_box_cold, Q_int_UAVbox_nom2,q_rad_UAV_winnight, A_boxUAV, A_expUAV)
+T_box_UAV_tempD3 = TempBox(minheat(Q_box_UAV_hot)[0], Q_int_UAVbox_peak2,q_rad_UAV_sumday_cruise, A_boxUAV, A_expUAV)
+T_box_base_tempD3 = TempBox(minheat(Q_box_base_hot)[0], Q_int_Basebox_peak2, q_rad_base_sumday, A_boxBASE, A_expBASE)
+T_box_base_tempW3 = TempBox(minheat(Q_box_base_cold)[0], Q_int_Basebox_nom2, q_rad_base_winnight, A_boxBASE, A_expBASE)
+
+print('Int inside diff [Abs, %], UAVwin, UAVsum, Basewin, Basesum', Diff(Q_int_UAVbox_nom,Q_int_UAVbox_nom2), Diff(Q_int_UAVbox_peak,Q_int_UAVbox_peak2), Diff(Q_int_Basebox_nom,Q_int_Basebox_nom2), Diff(Q_int_Basebox_peak,Q_int_Basebox_peak2))
+
+print('Box temperatures [Abs, %], UAVwin, UAVsum, Basewin, Basesum', Diff(T_box_UAV_tempW,T_box_UAV_tempW3),Diff(T_box_UAV_tempD,T_box_UAV_tempD3), Diff(T_box_base_tempW,T_box_base_tempW3), Diff(T_box_base_tempD,T_box_base_tempD3))
+

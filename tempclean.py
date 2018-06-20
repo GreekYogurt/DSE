@@ -210,7 +210,7 @@ print('Verification, average Mars surface temperature, neglecting atmosphere', E
 print('Sensitivity Analysis')
 def Diff(v1, v2):
     #Outputs the value and the % change between two values
-    return int((v2-v1)), int((v2-v1)/v1*100)
+    return v2-v1, int((v2-v1)/v1*100)
 #Changes in inputs
 Q_int_base_peak2 = 150*0.8 #W, 20% decrease
 Q_int_base_nom2 = 25*0.8 #W
